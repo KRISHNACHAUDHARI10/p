@@ -435,3 +435,161 @@ plt.figure(figsize=(18, 10))
 plot_tree(model, feature_names=X.columns, class_names=True, filled=True)
 plt.title("Decision Tree Visualization")
 plt.show()
+
+
+
+
+
+
+
+
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const CalculatorApp());
+} 
+
+class CalculatorApp extends StatefulWidget {
+  const CalculatorApp({super.key});
+
+
+  @override
+  State<CalculatorApp> createState() => CalculatorAppState();
+}
+
+class CalculatorAppState extends State<CalculatorApp> {
+  
+   String display = "0";
+   String expression = "";
+   bool shouldReset = false;
+
+  
+ 
+  void onButtonPress(String value) {
+    setState(() {
+      if (value == "AC") {
+         display = "0";
+         expression = "";
+      } else if (value == "CE") {
+        display = "0"; 
+      } else if (value == "<") {
+        if (display.length > 1) {                            
+          display = display.substring(0, display.length - 1);
+        }                                                      
+        else {
+          display = "0";
+        }
+      } else if (value == "=") {
+        expression += display;
+        try {
+          final result = _evaluate(expression);
+          display = result.toString();  
+        } catch (e) {
+          display = "Error";
+        }
+        expression = "";
+        shouldReset = true;
+      } else if ("+-*/%".contains(value))  {
+        expression += display + value;
+        shouldReset = true;
+      }
+       else {
+        if (display == "0" || shouldReset) {
+          display = value;
+          shouldReset = false;
+        } else {
+          display += value;
+        }
+      }
+    });
+  }
+
+  double _evaluate(String exp) {
+    exp = exp.replaceAll("×", "*").replaceAll("÷", "/");
+
+    List<String> operators = ["+", "-", "*", "/", "%"];
+                             
+    double parseExpression(String expr) {
+       
+       for (String op in ["*", "/", "%"]) {
+        int index = expr.lastIndexOf(op);
+        if (index != -1) {
+          double left = parseExpression(expr.substring(0, index));
+          double right = double.parse(expr.substring(index + 1));  
+                                                                     
+          switch (op) {                        
+            case "*":                   
+              return left * right;     
+            case "/":                
+              return left / right;   
+            case "%":               
+              return left % right;
+          }                                       
+        }                                                          
+       }
+
+      for (String op in ["+", "-"]) {
+        int index = expr.lastIndexOf(op);
+        if (index != -1) {
+          double left = parseExpression(expr.substring(0, index));
+          double right = double.parse(expr.substring(index + 1));
+        return op == "+"
+              ? left + right
+              : left - right;
+        }
+      }
+      return double.parse(expr);
+    }
+
+    return parseExpression(exp);
+  }
+                    
+Widget button(String text) {
+    return Expanded(
+        child: InkWell(                                         
+        onTap: () => onButtonPress(text),
+        child: Container(
+          height: 70,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            border: Border.all(color: const Color.fromARGB(255, 113, 31, 31)),
+            ),
+          child: Text(                                         
+            text,                                                       
+            style :     const TextStyle(fontSize: 25),                      
+          ),                                                        
+        ),                                                     
+      ),                                                        
+    );                                                       
+  }
+  
+@override
+ Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("Calculator")
+          ),
+        body: Column(
+          children: [
+            Expanded( 
+              child: Container(
+                width: double.infinity,
+                color: const Color.fromARGB(255, 235, 8, 8),
+                alignment: Alignment.bottomRight,
+                padding: const EdgeInsets.all(20),
+                child: Text(display,
+                    style: const TextStyle(fontSize: 45, color: Colors.white)),
+                ),
+            ),
+            Row(children  : [button("AC"), button("CE"), button("<"), button("%")]),
+            Row(children  : [button("7"), button("8"), button("9"), button("/")]),
+            Row(children  : [button("4"), button("5"), button("6"), button("*")]),
+            Row(children  : [button("1"), button("2"), button("3"), button("-")]),  
+            Row(children  : [button("0"), button("."), button("="), button("+")]),
+          ],
+        ),
+      ),
+    );
+  }
+}
