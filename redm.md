@@ -35,6 +35,43 @@ print("Coefficients:", model.coef_)
 
 
 
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+# 1. डेटा लोड करना
+df = pd.read_csv('Book2.csv')
+
+# 2. Class label बनाना (binary classification)
+# मान लो अगर Final_Score >= 60 → Pass (1), वरना Fail (0)
+df['Pass'] = (df['Final_Score'] >= 60).astype(int)
+
+# 3. Features (X) और Target (y) चुनना
+X = df[['Hours_Studied', 'Attendance', 'Previous_Score']]
+y = df['Pass']
+
+# 4. ट्रेन-टेस्ट विभाजन
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# 5. Logistic Regression मॉडल बनाना और ट्रेन करना
+model = LogisticRegression(max_iter=1000)  # max_iter ज़रूरत से बढ़ाया, ताकि converge हो सके
+model.fit(X_train, y_train)
+
+# 6. Prediction करना
+y_pred = model.predict(X_test)
+
+# 7. मॉडल का मूल्यांकन करना
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+print("Classification Report:\n", classification_report(y_test, y_pred))
+
+# 8. Probability देखना (optional)
+y_pred_proba = model.predict_proba(X_test)  # यह दिखाएगा हर class की probability
+print("Prediction Probabilities:\n", y_pred_proba)
+
+
+
 Logistic Regression
 
 
@@ -630,4 +667,5 @@ Widget button(String text) {
     );
   }
 }
+
 
