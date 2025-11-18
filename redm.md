@@ -1,3 +1,40 @@
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+
+# 1. डेटा लोड करना
+df = pd.read_csv('Book2.csv')
+
+# 2. फीचर्स (X) और टारगेट (y) को अलग करना
+X = df[['Hours_Studied', 'Attendance', 'Previous_Score']]  # independent variables
+y = df['Final_Score']  # dependent variable
+
+# 3. ट्रेन और टेस्ट सेट में बाँटना
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# यहाँ test_size=0.2 का मतलब है 20% डेटा टेस्ट के लिए, और 80% ट्रेन के लिए
+
+# 4. मॉडल बनाना और ट्रेन करना
+model = LinearRegression()  # मॉडल की instance
+model.fit(X_train, y_train)  # ट्रेनिंग
+
+# 5. टेस्ट पर prediction करना
+y_pred = model.predict(X_test)
+
+# 6. मॉडल को evaluate करना
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+print("Mean Squared Error (MSE):", mse)
+print("R^2 Score:", r2)
+
+# 7. मॉडल के coefficients देखना (slope) और intercept
+print("Intercept:", model.intercept_)
+print("Coefficients:", model.coef_)
+
+
+
+
 Logistic Regression
 
 
@@ -593,3 +630,4 @@ Widget button(String text) {
     );
   }
 }
+
